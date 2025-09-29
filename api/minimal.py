@@ -7,13 +7,9 @@ import os
 app = FastAPI()
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="templates"), name="static")
+app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
