@@ -1,4 +1,3 @@
-
 {
   "version": 2,
   "builds": [
@@ -14,5 +13,10 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "/api/minimal.py" }
-  ]
+  ],
+  "build": {
+    "env": {
+      "NLTK_DATA": "/tmp/nltk_data"
+    }
+  }
 }
