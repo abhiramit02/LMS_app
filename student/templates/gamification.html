@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gamification Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 to-purple-200 font-sans">
+    <div class="max-w-6xl mx-auto p-6">
+        <h1 class="text-4xl font-bold text-gray-800 mb-6">🎮 Gamification – {{ student.name }}</h1>
+
+        <!-- Gamification Insights -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {% for insight in insights %}
+            <div class="bg-gradient-to-r from-green-400 to-blue-500 text-white shadow-md rounded-xl p-4">
+                <p class="text-lg">{{ insight }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Points and Level -->
+            <div class="bg-white shadow-lg rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">🏅 Points & Level</h2>
+                <p class="text-2xl font-bold text-indigo-600">{{ student.points }} Points</p>
+                <p class="text-lg">Level {{ student.level }}</p>
+
+                <!-- XP Progress -->
+                <div class="w-full bg-gray-200 rounded-full h-4 mt-4">
+                    <div class="bg-indigo-600 h-4 rounded-full" style="width: {{ student.xp_progress }}%"></div>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">{{ student.xp_progress }}% XP to next level</p>
+            </div>
+
+            <!-- Badges -->
+            <div class="bg-white shadow-lg rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">🏆 Badges</h2>
+                <div class="flex flex-wrap gap-3">
+                    {% for badge in student.badges %}
+                        <div class="bg-yellow-300 px-4 py-2 rounded-full shadow-md text-sm font-semibold">
+                            {{ badge }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="bg-white shadow-lg rounded-xl p-6 col-span-1 md:col-span-2">
+                <h2 class="text-xl font-semibold mb-4">📈 Leaderboard</h2>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-700">
+                            <th class="py-2 px-4">Rank</th>
+                            <th class="py-2 px-4">Name</th>
+                            <th class="py-2 px-4">Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in leaderboard %}
+                        <tr class="border-b hover:bg-indigo-50">
+                            <td class="py-2 px-4">{{ loop.index }}</td>
+                            <td class="py-2 px-4">{{ player.name }}</td>
+                            <td class="py-2 px-4 font-bold">{{ player.points }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

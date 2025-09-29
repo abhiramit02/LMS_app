@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Video Summarizer</title>
+  
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="app-header gradient-header sticky">
+    <div class="container header-content">
+      <span class="brand-icon">🎬</span>
+      <h1 class="brand-title">Video Summarizer</h1>
+    </div>
+  </header>
+  <main class="main-layout gradient-bg">
+    <div class="container flex-center">
+      <section class="sidebar glass-card">
+        <form id="uploadForm">
+          <div class="input-type-group input-type-top pill-toggle" role="radiogroup" aria-label="Choose input type">
+            <label><input type="radio" name="inputType" value="file" checked> <span>Upload Video</span></label>
+            <label><input type="radio" name="inputType" value="url"> <span>YouTube URL</span></label>
+          </div>
+          <h2 class="form-heading"><span class="form-icon">📤</span> Process Video</h2>
+          <div id="fileInput" class="input-section">
+  <input type="file" id="videoFile" accept="video/*" aria-label="Upload video file" style="display:none;">
+  <button type="button" id="customFileBtn" class="primary-btn file-btn"><span class="btn-icon"></span> Choose Video File</button>
+  <span id="fileNameDisplay" class="file-name-display" >No file chosen</span>
+
+</div>
+          <div id="urlInput" class="input-section" style="display: none;">
+            <input type="text" id="youtubeUrl" placeholder="Enter YouTube URL" class="url-input" aria-label="YouTube URL">
+          </div>
+          <button type="submit" class="primary-btn form-btn"><span class="btn-icon"></span> Process Video</button>
+          <div id="processingMessage" class="hidden">Video is processing...</div>
+
+          <div id="error-message" class="hidden error"></div>
+        </form>
+      </section>
+      <section class="results-area">
+        <div id="results" class="hidden fade-in">
+          <div class="result-card transcript-card">
+            <h2><span class="result-icon">📝</span> Transcript</h2>
+            <pre id="transcript"></pre>
+          </div>
+          <div class="result-card summary-card">
+            <h2><span class="result-icon">🧠</span> Abstractive Summary</h2>
+            <pre id="summary-abstractive"></pre>
+          </div>
+          <div class="result-card summary-card">
+            <h2><span class="result-icon">🔍</span> Extractive Summary</h2>
+            <pre id="summary-extractive"></pre>
+          </div>
+          <div class="notes-section">
+            <div class="notes-header">
+              <h2><span class="result-icon">📒</span> Notes</h2>
+              <button id="generate-notes" class="primary-btn notes-btn"><span class="btn-icon">✨</span> Generate Notes</button>
+            </div>
+            <div id="notes-container"></div>
+          </div>
+          <div id="flowchart-section">
+            <h2><span class="result-icon">📊</span> Flowchart</h2>
+            <button id="generateFlowchartBtn" class="primary-btn flowchart-btn"><span class="btn-icon">🛠️</span> Generate Flowchart</button>
+            <div id="flowchart"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    // Handle mermaid.js loading errors
+    window.addEventListener('error', function(e) {
+      if (e.filename && e.filename.includes('mermaid')) {
+        console.error('Failed to load mermaid.js:', e);
+        document.getElementById('flowchart').innerHTML = '<p class="error">Failed to load flowchart library. Please check your internet connection.</p>';
+      }
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+  <script src="/static/script.js"></script>
+</body>
+</html>

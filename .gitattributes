@@ -1,4 +1,0 @@
-# Create .gitattributes file
-echo "* text=auto eol=lf" > .gitattributes
-echo "*.{cmd,[cC][mM][dD]} text eol=crlf" >> .gitattributes
-echo "*.{bat,[bB][aA][tT]} text eol=crlf" >> .gitattributes

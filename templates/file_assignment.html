@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        label { display: block; margin-top: 12px; }
+        input { padding: 8px; }
+        button { margin-top: 16px; padding: 10px 14px; background: #2563eb; color: white; border: 0; border-radius: 6px; cursor: pointer; }
+        pre { background: #f7f7f7; padding: 12px; border-radius: 6px; overflow: auto; }
+        a { color: #2563eb; }
+    </style>
+</head>
+<body>
+    <h2>Assignment Generator (from File)</h2>
+    <a href="/">← Back</a>
+    <form id="form">
+        <label>Upload PDF/DOCX
+            <input type="file" id="file" accept=".pdf,.docx" required />
+        </label>
+        <label>No. of Questions
+            <input type="number" id="num_questions" value="5" min="1" />
+        </label>
+        <button type="submit">Generate</button>
+    </form>
+
+    <h3>Result</h3>
+    <pre id="out">Upload a file to start…</pre>
+
+    <script>
+        const out = document.getElementById('out');
+        document.getElementById('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            out.textContent = 'Working…';
+            const fd = new FormData();
+            const file = document.getElementById('file').files[0];
+            if (!file) { out.textContent = 'Please select a file.'; return; }
+            fd.append('file', file);
+            fd.append('num_questions', document.getElementById('num_questions').value);
+            const res = await fetch('/file/generate-from-file', { method: 'POST', body: fd });
+            const data = await res.json();
+            out.textContent = JSON.stringify(data, null, 2);
+        });
+    </script>
+</body>
+</html>
+
+

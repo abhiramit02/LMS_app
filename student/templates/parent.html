@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parent Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-6xl mx-auto p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">
+            📊 Parent Dashboard – {{ student.name }}
+        </h1>
+
+        <!-- Analytics Insights -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {% for insight in analytics %}
+            <div class="bg-white shadow-md rounded-xl p-4">
+                <p class="text-gray-700">{{ insight }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Assignments -->
+            <div class="bg-white shadow-md rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Assignments</h2>
+                <canvas id="assignmentsChart"></canvas>
+            </div>
+
+            <!-- Attendance -->
+            <div class="bg-white shadow-md rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Attendance</h2>
+                <canvas id="attendanceChart"></canvas>
+            </div>
+
+            <!-- Grades -->
+            <div class="bg-white shadow-md rounded-xl p-6 col-span-1 md:col-span-3">
+                <h2 class="text-xl font-semibold mb-4">Grades</h2>
+                <canvas id="gradesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Assignments Chart
+        new Chart(document.getElementById("assignmentsChart"), {
+            type: "pie",
+            data: {
+                labels: ["Completed", "Pending"],
+                datasets: [{
+                    data: [{{ completed }}, {{ pending }}],
+                    backgroundColor: ["#4CAF50", "#FF9800"]
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // Attendance Chart
+        new Chart(document.getElementById("attendanceChart"), {
+            type: "doughnut",
+            data: {
+                labels: ["Present", "Absent"],
+                datasets: [{
+                    data: [{{ student.attendance }}, {{ 100 - student.attendance }}],
+                    backgroundColor: ["#2196F3", "#F44336"]
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // Grades Chart
+        new Chart(document.getElementById("gradesChart"), {
+            type: "bar",
+            data: {
+                labels: {{ grades_labels|tojson }},
+                datasets: [{
+                    label: "Grades (%)",
+                    data: {{ grades_values|tojson }},
+                    backgroundColor: "#673AB7"
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, max: 100 } }
+            }
+        });
+    </script>
+</body>
+</html>

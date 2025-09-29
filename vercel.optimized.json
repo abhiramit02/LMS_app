@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python",
+      "config": { 
+        "maxLambdaSize": "50mb",
+        "memory": 3008,
+        "maxDuration": 10,
+        "includeFiles": ["**/*.py", "**/*.json", "**/*.txt"],
+        "exclude": [
+          ".github/**", 
+          "tests/**",
+          "*.ipynb", 
+          "*.csv", 
+          "*.xlsx", 
+          "*.docx", 
+          "*.pdf",
+          "*.pkl",
+          "*.h5",
+          "*.pt",
+          "*.bin",
+          "**/__pycache__/**"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/api/index.py" }
+  ],
+  "build": {
+    "env": {
+      "NLTK_DATA": "/tmp/nltk_data",
+      "PYTHONUNBUFFERED": "1",
+      "PYTHONPATH": "/var/task",
+      "DISABLE_GRADING": "1"
+    }
+  }
+}

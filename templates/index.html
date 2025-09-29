@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .card { border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px; }
+        .card h3 { margin-top: 0; }
+        a.button { display: inline-block; margin-top: 8px; padding: 8px 12px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px; }
+        a.button:hover { background: #1e40af; }
+    </style>
+    </head>
+<body>
+    <h1>LMS Dashboard</h1>
+    <p>Select a tool to get started.</p>
+    <div class="cards">
+        <div class="card">
+            <h3>Assignment Generator (by Student)</h3>
+            <p>Create personalized MCQ assignments from `data/` CSVs.</p>
+            <a class="button" href="/ui/assignments">Open</a>
+        </div>
+        <div class="card">
+            <h3>Assignment Generator (from File)</h3>
+            <p>Upload PDF/DOCX and auto-generate MCQs.</p>
+            <a class="button" href="/ui/file-assignment">Open</a>
+        </div>
+        <div class="card">
+            <h3>Automated Grading</h3>
+            <p>MCQ (XGBoost/LightGBM), Subjective (RoBERTa), Handwriting (YOLOv8/OpenCV).</p>
+            <a class="button" href="/ui/grading">Open</a>
+        </div>
+        <div class="card">
+            <h3>AI Learning Recommendations</h3>
+            <p>Personalized course suggestions using collaborative filtering, content-based filtering, and transformer models (BERT/DistilBERT).</p>
+            <a class="button" href="/ui/recommendations">Open</a>
+        </div>
+        <div class="card">
+            <h3>Plagiarism Checker</h3>
+            <p>Advanced plagiarism detection using semantic similarity, NLP techniques, and AI models to ensure academic integrity.</p>
+            <a class="button" href="/ui/plagiarism">Open</a>
+        </div>
+        <div class="card">
+            <h3>Student Performance Analytics</h3>
+            <p>Comprehensive analytics dashboard with at-risk student identification, learning pattern clustering, and personalized improvement recommendations.</p>
+            <a class="button" href="/ui/analytics">Open</a>
+        </div>
+        <div class="card">
+            <h3>PDF Teaching Assistant</h3>
+            <p>AI-powered PDF summarization with teaching tips, key concepts extraction, and interactive chatbot for educational content guidance.</p>
+            <a class="button" href="/ui/pdf-chatbot">Open</a>
+        </div>
+        <div class="card">
+            <h3>Teacher Review Summarizer</h3>
+            <p>Analyze student feedback, categorize reviews into positive/negative/neutral, and get actionable improvement suggestions for teaching performance.</p>
+            <a class="button" href="/ui/review-summarizer">Open</a>
+        </div>
+        <div class="card">
+            <h3>Student Progress Tracker</h3>
+            <p>Comprehensive dashboard with individual student analytics, class overview, topic performance visualization, and personalized recommendations.</p>
+            <a class="button" href="/ui/student-progress">Open</a>
+        </div>
+    </div>
+</body>
+</html>

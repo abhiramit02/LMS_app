@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        section { border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px; margin-bottom: 18px; }
+        label { display: block; margin-top: 12px; }
+        textarea, input { width: 100%; max-width: 680px; padding: 8px; }
+        button { margin-top: 12px; padding: 8px 12px; background: #2563eb; color: white; border: 0; border-radius: 6px; cursor: pointer; }
+        pre { background: #f7f7f7; padding: 12px; border-radius: 6px; overflow: auto; }
+        a { color: #2563eb; }
+    </style>
+</head>
+<body>
+    <h2>Automated Grading</h2>
+    <a href="/">← Back</a>
+
+    <section>
+        <h3>MCQ Grading (Rule-based or ML)</h3>
+        <label>Answers (JSON: {"Q1": "A", ...})
+            <textarea id="mcq_answers" rows="4">{"Q1":"A","Q2":"C"}</textarea>
+        </label>
+        <label>Key (JSON: {"Q1": "B", ...})
+            <textarea id="mcq_key" rows="4">{"Q1":"A","Q2":"C"}</textarea>
+        </label>
+        <label>Model ID (optional: mcq_xgboost | mcq_lightgbm)
+            <input id="mcq_model" placeholder="leave empty for rule-based" />
+        </label>
+        <button id="btn_mcq">Grade MCQs</button>
+        <pre id="out_mcq"></pre>
+    </section>
+
+    <section>
+        <h3>Subjective Grading (RoBERTa)</h3>
+        <label>Student Answer
+            <textarea id="subj_student" rows="3">Photosynthesis converts light energy into chemical energy in plants.</textarea>
+        </label>
+        <label>Reference Answer
+            <textarea id="subj_ref" rows="3">Photosynthesis is the process by which plants convert sunlight into chemical energy stored as glucose.</textarea>
+        </label>
+        <label>Max Score
+            <input id="subj_max" type="number" value="10" />
+        </label>
+        <button id="btn_subj">Grade Subjective</button>
+        <pre id="out_subj"></pre>
+    </section>
+
+
+    <section>
+        <h3>MCQ Grading from Google Form CSV</h3>
+        <label>Responses CSV
+            <input id="mcq_csv" type="file" accept=".csv" />
+        </label>
+        <label>Answer Key (JSON) — or upload CSV below, or extract in-sheet
+            <textarea id="mcq_key_json" rows="3">{"Q1":"A","Q2":"C"}</textarea>
+        </label>
+        <label>Answer Key CSV (optional with columns question, answer)
+            <input id="mcq_key_csv" type="file" accept=".csv" />
+        </label>
+        <label>Answer Key Source
+            <select id="mcq_key_source">
+                <option value="json">JSON (textbox)</option>
+                <option value="csv">CSV upload</option>
+                <option value="in_sheet">In-sheet (use special row)</option>
+            </select>
+        </label>
+        <label>In-sheet Key Identifier (student id cell value for key row)
+            <input id="mcq_key_ident" value="KEY" />
+        </label>
+        <label>Student ID Column (optional)
+            <input id="mcq_sid_col" placeholder="auto-detect if empty" />
+        </label>
+        <button id="btn_mcq_csv">Grade CSV</button>
+        <pre id="out_mcq_csv"></pre>
+    </section>
+
+
+    <script>
+        const j = (el) => document.getElementById(el);
+        j('btn_mcq').onclick = async () => {
+            try {
+                const payload = {
+                    answers: JSON.parse(j('mcq_answers').value || '{}'),
+                    key: JSON.parse(j('mcq_key').value || '{}'),
+                    model: j('mcq_model').value || null
+                };
+                const res = await fetch('/grading/mcq/grade', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                const data = await res.json();
+                j('out_mcq').textContent = JSON.stringify(data, null, 2);
+            } catch (e) { j('out_mcq').textContent = String(e); }
+        };
+
+        j('btn_subj').onclick = async () => {
+            try {
+                const payload = {
+                    student_answer: j('subj_student').value,
+                    reference_answer: j('subj_ref').value,
+                    max_score: parseFloat(j('subj_max').value)
+                };
+                const res = await fetch('/grading/subjective/grade', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                const data = await res.json();
+                j('out_subj').textContent = JSON.stringify(data, null, 2);
+            } catch (e) { j('out_subj').textContent = String(e); }
+        };
+
+        j('btn_mcq_csv').onclick = async () => {
+            j('out_mcq_csv').textContent = 'Working…';
+            const fd = new FormData();
+            if (j('mcq_csv').files[0]) fd.append('responses', j('mcq_csv').files[0]);
+            if (j('mcq_key_csv').files[0]) fd.append('key_csv', j('mcq_key_csv').files[0]);
+            const keyJson = j('mcq_key_json').value.trim();
+            if (keyJson) fd.append('key_json', keyJson);
+            fd.append('key_source', j('mcq_key_source').value);
+            fd.append('key_identifier', j('mcq_key_ident').value);
+            const sidCol = j('mcq_sid_col').value.trim();
+            if (sidCol) fd.append('student_id_col', sidCol);
+            const res = await fetch('/grading/mcq/grade-google-form', { method: 'POST', body: fd });
+            const data = await res.json();
+            j('out_mcq_csv').textContent = JSON.stringify(data, null, 2);
+        };
+
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Learning Recommendations - LMS</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        .progress-ring-circle {
+            transition: stroke-dasharray 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-brain text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold">AI Learning Recommendations</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="hover:text-gray-200 transition-colors">
+                        <i class="fas fa-home mr-2"></i>Home
+                    </a>
+                    <a href="/ui/assignments" class="hover:text-gray-200 transition-colors">
+                        <i class="fas fa-tasks mr-2"></i>Assignments
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                Personalized Learning Experience
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Discover your next learning path with AI-powered recommendations based on collaborative filtering, 
+                content analysis, and contextual understanding using advanced transformer models.
+            </p>
+        </div>
+
+        <!-- Student ID Input -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex items-center space-x-4">
+                <div class="flex-1">
+                    <label for="studentId" class="block text-sm font-medium text-gray-700 mb-2">
+                        Enter Student ID
+                    </label>
+                    <input type="text" id="studentId" placeholder="e.g., student_1" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <button onclick="loadRecommendations()" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors">
+                    <i class="fas fa-search mr-2"></i>Get Recommendations
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="hidden text-center py-12">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p class="text-gray-600">Analyzing your learning patterns and generating personalized recommendations...</p>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="dashboard" class="hidden">
+            <!-- Student Profile Card -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-user-circle mr-3 text-blue-600"></i>Student Profile
+                </h3>
+                <div id="studentProfile" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Profile data will be populated here -->
+                </div>
+            </div>
+
+            <!-- Recommendations Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Hybrid Recommendations -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">
+                        <i class="fas fa-star mr-2 text-yellow-500"></i>Top Recommendations
+                    </h3>
+                    <div id="hybridRecommendations" class="space-y-4">
+                        <!-- Recommendations will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Next Courses -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">
+                        <i class="fas fa-route mr-2 text-green-500"></i>Next Courses
+                    </h3>
+                    <div id="nextCourses" class="space-y-4">
+                        <!-- Next courses will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Path -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-map-signs mr-3 text-purple-600"></i>Your Learning Path
+                </h3>
+                <div id="learningPath" class="relative">
+                    <!-- Learning path will be populated here -->
+                </div>
+            </div>
+
+            <!-- Progress Analytics -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-chart-line mr-3 text-indigo-600"></i>Progress Analytics
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Performance Overview</h4>
+                        <canvas id="performanceChart" width="400" height="200"></canvas>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Topic Progress</h4>
+                        <div id="topicProgress" class="space-y-3">
+                            <!-- Topic progress will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Materials -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-book mr-3 text-teal-600"></i>Recommended Learning Materials
+                </h3>
+                <div id="learningMaterials" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Learning materials will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="hidden bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-4"></i>
+            <h3 class="text-lg font-semibold text-red-800 mb-2">Error Loading Recommendations</h3>
+            <p id="errorMessage" class="text-red-600">An error occurred while loading your recommendations.</p>
+            <button onclick="loadRecommendations()" class="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors">
+                Try Again
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2024 LMS AI Recommendation System. Powered by advanced machine learning algorithms.</p>
+        </div>
+    </footer>
+
+    <script>
+        let performanceChart = null;
+
+        async function loadRecommendations() {
+            const studentId = document.getElementById('studentId').value.trim();
+            if (!studentId) {
+                alert('Please enter a student ID');
+                return;
+            }
+
+            showLoading();
+            hideError();
+            hideDashboard();
+
+            try {
+                // Load personalized dashboard data
+                const dashboardResponse = await fetch(`/recommendations/dashboard/${studentId}`);
+                if (!dashboardResponse.ok) {
+                    throw new Error(`Failed to load dashboard: ${dashboardResponse.statusText}`);
+                }
+
+                const dashboardData = await dashboardResponse.json();
+                displayDashboard(dashboardData);
+
+                // Load additional data
+                await loadProgressData(studentId);
+                await loadLearningMaterials(studentId);
+
+                showDashboard();
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayDashboard(data) {
+            displayStudentProfile(data.profile);
+            displayRecommendations(data.recommendations);
+            displayNextCourses(data.next_courses);
+            displayLearningPath(data.learning_path);
+        }
+
+        function displayStudentProfile(profile) {
+            const container = document.getElementById('studentProfile');
+            container.innerHTML = `
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600">${profile.total_time_spent.toFixed(0)}</div>
+                    <div class="text-sm text-gray-600">Minutes Spent</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600">${(profile.avg_completion_rate * 100).toFixed(1)}%</div>
+                    <div class="text-sm text-gray-600">Completion Rate</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-600">${profile.avg_score.toFixed(1)}</div>
+                    <div class="text-sm text-gray-600">Average Score</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-orange-600">${profile.topics_attempted}</div>
+                    <div class="text-sm text-gray-600">Topics Attempted</div>
+                </div>
+            `;
+        }
+
+        function displayRecommendations(recommendations) {
+            const container = document.getElementById('hybridRecommendations');
+            container.innerHTML = recommendations.map((rec, index) => `
+                <div class="border-l-4 border-blue-500 pl-4 py-2 card-hover">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${rec.topic_id}</h4>
+                            <p class="text-sm text-gray-600">Score: ${rec.final_score.toFixed(1)}</p>
+                            <p class="text-xs text-gray-500">Methods: ${rec.methods.join(', ')}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg font-bold text-blue-600">#${index + 1}</div>
+                            <div class="text-xs text-gray-500">${(rec.confidence * 100).toFixed(0)}% confidence</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayNextCourses(courses) {
+            const container = document.getElementById('nextCourses');
+            container.innerHTML = courses.map(course => `
+                <div class="border-l-4 border-green-500 pl-4 py-2 card-hover">
+                    <h4 class="font-semibold text-gray-900">${course.title}</h4>
+                    <p class="text-sm text-gray-600 mb-2">${course.description}</p>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">${course.difficulty}</span>
+                        <span class="text-gray-500">${course.duration.toFixed(0)} min</span>
+                    </div>
+                    <div class="mt-2">
+                        <div class="flex justify-between text-sm">
+                            <span>Readiness:</span>
+                            <span class="font-semibold">${(course.readiness_score * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: ${course.readiness_score * 100}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayLearningPath(path) {
+            const container = document.getElementById('learningPath');
+            container.innerHTML = `
+                <div class="relative">
+                    ${path.map((item, index) => `
+                        <div class="flex items-center mb-6">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white ${
+                                item.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'
+                            }">
+                                ${index + 1}
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <h4 class="font-semibold text-gray-900">${item.topic_id}</h4>
+                                <p class="text-sm text-gray-600 capitalize">${item.status}</p>
+                                ${item.score ? `<p class="text-xs text-gray-500">Score: ${item.score}</p>` : ''}
+                                ${item.readiness_score ? `<p class="text-xs text-gray-500">Readiness: ${(item.readiness_score * 100).toFixed(0)}%</p>` : ''}
+                            </div>
+                            ${index < path.length - 1 ? '<div class="w-px h-12 bg-gray-300 ml-4"></div>' : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        async function loadProgressData(studentId) {
+            try {
+                const response = await fetch(`/recommendations/progress/${studentId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayProgressChart(data);
+                    displayTopicProgress(data.progress);
+                }
+            } catch (error) {
+                console.error('Error loading progress data:', error);
+            }
+        }
+
+        function displayProgressChart(data) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            if (performanceChart) {
+                performanceChart.destroy();
+            }
+
+            const labels = Object.keys(data.progress);
+            const scores = labels.map(topic => data.progress[topic].avg_score);
+
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Average Score',
+                        data: scores,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function displayTopicProgress(progress) {
+            const container = document.getElementById('topicProgress');
+            container.innerHTML = Object.entries(progress).map(([topic, data]) => `
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-700">${topic}</span>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-600">${data.avg_score.toFixed(1)}</span>
+                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: ${data.avg_score}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadLearningMaterials(studentId) {
+            try {
+                // Get first recommendation to show learning materials
+                const recommendationsResponse = await fetch(`/recommendations/hybrid/${studentId}?n_recommendations=1`);
+                if (recommendationsResponse.ok) {
+                    const recommendations = await recommendationsResponse.json();
+                    if (recommendations.length > 0) {
+                        const topicId = recommendations[0].topic_id;
+                        const materialsResponse = await fetch(`/recommendations/learning-materials/${studentId}/${topicId}`);
+                        if (materialsResponse.ok) {
+                            const materials = await materialsResponse.json();
+                            displayLearningMaterials(materials);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading learning materials:', error);
+            }
+        }
+
+        function displayLearningMaterials(materials) {
+            const container = document.getElementById('learningMaterials');
+            container.innerHTML = materials.map(material => `
+                <div class="bg-gray-50 rounded-lg p-4 card-hover">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-${getMaterialIcon(material.type)} text-${getMaterialColor(material.difficulty)}-500 mr-2"></i>
+                        <span class="text-sm font-medium text-gray-700 capitalize">${material.type.replace('_', ' ')}</span>
+                    </div>
+                    <p class="text-gray-800 mb-3">${material.content}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="bg-${getMaterialColor(material.difficulty)}-100 text-${getMaterialColor(material.difficulty)}-800 text-xs px-2 py-1 rounded">
+                            ${material.difficulty}
+                        </span>
+                        <span class="text-xs text-gray-500">${material.reason}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getMaterialIcon(type) {
+            const icons = {
+                'practice_question': 'question-circle',
+                'challenge_question': 'brain',
+                'additional_resource': 'book',
+                'advanced_resource': 'rocket'
+            };
+            return icons[type] || 'book';
+        }
+
+        function getMaterialColor(difficulty) {
+            const colors = {
+                'Easy': 'green',
+                'Medium': 'yellow',
+                'Hard': 'red',
+                'Beginner': 'green',
+                'Intermediate': 'yellow',
+                'Advanced': 'red'
+            };
+            return colors[difficulty] || 'blue';
+        }
+
+        function showLoading() {
+            document.getElementById('loadingState').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingState').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('dashboard').classList.remove('hidden');
+        }
+
+        function hideDashboard() {
+            document.getElementById('dashboard').classList.add('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorState').classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('errorState').classList.add('hidden');
+        }
+
+        // Load default student on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('studentId').value = 'student_1';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .upload-section {
+            padding: 40px;
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .chat-section {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-area {
+            border: 3px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #2563eb;
+            background: #f1f5f9;
+        }
+
+        .upload-area.dragover {
+            border-color: #2563eb;
+            background: #dbeafe;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .summary-display {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .summary-section {
+            margin-bottom: 20px;
+        }
+
+        .summary-section h4 {
+            color: #0c4a6e;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .summary-section p {
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        .tips-list, .concepts-list, .activities-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips-list li, .concepts-list li, .activities-list li {
+            background: white;
+            margin: 8px 0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .chat-messages {
+            flex: 1;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background: #2563eb;
+            color: white;
+            margin-left: auto;
+        }
+
+        .message.ai {
+            background: white;
+            border: 1px solid #e5e7eb;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 25px;
+            font-size: 1rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .send-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .send-btn:hover {
+            background: #1e40af;
+        }
+
+        .suggestions {
+            margin-top: 15px;
+        }
+
+        .suggestion-btn {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .alert.success {
+            background: #dcfce7;
+            border: 1px solid #16a34a;
+            color: #15803d;
+        }
+
+        .alert.error {
+            background: #fef2f2;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .upload-section {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 PDF Teaching Assistant</h1>
+            <p>Upload educational PDFs and get AI-powered summaries with teaching tips</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <h2 class="section-title">
+                    📄 Upload PDF Document
+                </h2>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <p><strong>Click to upload</strong> or drag and drop your PDF here</p>
+                    <p style="color: #64748b; margin-top: 10px;">Maximum file size: 10MB</p>
+                </div>
+
+                <input type="file" id="pdfFile" accept=".pdf" style="display: none;">
+
+                <div class="form-group">
+                    <label for="subject">Subject (Optional)</label>
+                    <input type="text" id="subject" class="form-control" placeholder="e.g., Mathematics, Science, History">
+                </div>
+
+                <div class="form-group">
+                    <label for="gradeLevel">Grade Level (Optional)</label>
+                    <select id="gradeLevel" class="form-control">
+                        <option value="">Select grade level</option>
+                        <option value="Elementary">Elementary (K-5)</option>
+                        <option value="Middle School">Middle School (6-8)</option>
+                        <option value="High School">High School (9-12)</option>
+                        <option value="College">College/University</option>
+                    </select>
+                </div>
+
+                <button id="analyzeBtn" class="btn" disabled>
+                    🔍 Analyze PDF
+                </button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing PDF and generating teaching insights...</p>
+                </div>
+
+                <div id="alerts"></div>
+
+                <!-- Summary Display -->
+                <div class="summary-display" id="summaryDisplay">
+                    <div class="summary-section">
+                        <h4>📋 Summary</h4>
+                        <p id="summaryText"></p>
+                    </div>
+
+                    <div class="summary-section">
+                        <h4>💡 Teaching Tips</h4>
+                        <ul class="tips-list" id="teachingTips"></ul>
+                    </div>
+
+                    <div class="summary-section">
+                        <h4>🎯 Key Concepts</h4>
+                        <ul class="concepts-list" id="keyConcepts"></ul>
+                    </div>
+
+                    <div class="summary-section">
+                        <h4>📊 Learning Details</h4>
+                        <p><strong>Difficulty Level:</strong> <span id="difficultyLevel"></span></p>
+                        <p><strong>Estimated Teaching Time:</strong> <span id="teachingTime"></span></p>
+                    </div>
+
+                    <div class="summary-section">
+                        <h4>🎲 Suggested Activities</h4>
+                        <ul class="activities-list" id="suggestedActivities"></ul>
+                    </div>
+
+                    <div class="summary-section">
+                        <h4>📝 Assessment Ideas</h4>
+                        <ul class="activities-list" id="assessmentIdeas"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Section -->
+            <div class="chat-section">
+                <h2 class="section-title">
+                    💬 Ask Questions About the Content
+                </h2>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai">
+                        <p>👋 Hello! Upload a PDF first, then I'll be ready to answer your questions about the content and provide teaching advice.</p>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="Ask about teaching strategies, key concepts, or student activities..." disabled>
+                    <button id="sendBtn" class="send-btn" disabled>Send</button>
+                </div>
+
+                <div class="suggestions" id="suggestions" style="display: none;">
+                    <p style="margin-bottom: 10px; font-weight: 600;">💡 Suggested questions:</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pdfContent = '';
+        let chatHistory = [];
+
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const pdfFile = document.getElementById('pdfFile');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loading = document.getElementById('loading');
+        const summaryDisplay = document.getElementById('summaryDisplay');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatMessages = document.getElementById('chatMessages');
+        const suggestions = document.getElementById('suggestions');
+        const alerts = document.getElementById('alerts');
+
+        // Upload area events
+        uploadArea.addEventListener('click', () => pdfFile.click());
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('drop', handleDrop);
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+
+        pdfFile.addEventListener('change', handleFileSelect);
+        analyzeBtn.addEventListener('click', analyzePDF);
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                pdfFile.files = files;
+                handleFileSelect();
+            }
+        }
+
+        function handleFileSelect() {
+            const file = pdfFile.files[0];
+            if (file) {
+                if (file.type !== 'application/pdf') {
+                    showAlert('Please select a PDF file.', 'error');
+                    return;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    showAlert('File size must be less than 10MB.', 'error');
+                    return;
+                }
+                
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">✅</div>
+                    <p><strong>${file.name}</strong></p>
+                    <p style="color: #64748b;">Ready to analyze</p>
+                `;
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        async function analyzePDF() {
+            const file = pdfFile.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('subject', document.getElementById('subject').value);
+            formData.append('grade_level', document.getElementById('gradeLevel').value);
+
+            loading.style.display = 'block';
+            analyzeBtn.disabled = true;
+
+            try {
+                const response = await fetch('/pdf-chatbot/upload-pdf', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    displaySummary(result);
+                    pdfContent = result.summary + ' ' + result.key_concepts.join(' ');
+                    enableChat();
+                    showAlert('PDF analyzed successfully!', 'success');
+                } else {
+                    showAlert(result.detail || 'Error analyzing PDF', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error. Please try again.', 'error');
+            } finally {
+                loading.style.display = 'none';
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        function displaySummary(data) {
+            document.getElementById('summaryText').textContent = data.summary;
+            document.getElementById('difficultyLevel').textContent = data.difficulty_level;
+            document.getElementById('teachingTime').textContent = data.estimated_teaching_time;
+
+            const tipsList = document.getElementById('teachingTips');
+            tipsList.innerHTML = '';
+            data.teaching_tips.forEach(tip => {
+                const li = document.createElement('li');
+                li.textContent = tip;
+                tipsList.appendChild(li);
+            });
+
+            const conceptsList = document.getElementById('keyConcepts');
+            conceptsList.innerHTML = '';
+            data.key_concepts.forEach(concept => {
+                const li = document.createElement('li');
+                li.textContent = concept;
+                conceptsList.appendChild(li);
+            });
+
+            const activitiesList = document.getElementById('suggestedActivities');
+            activitiesList.innerHTML = '';
+            data.suggested_activities.forEach(activity => {
+                const li = document.createElement('li');
+                li.textContent = activity;
+                activitiesList.appendChild(li);
+            });
+
+            const assessmentList = document.getElementById('assessmentIdeas');
+            assessmentList.innerHTML = '';
+            data.assessment_ideas.forEach(idea => {
+                const li = document.createElement('li');
+                li.textContent = idea;
+                assessmentList.appendChild(li);
+            });
+
+            summaryDisplay.style.display = 'block';
+        }
+
+        function enableChat() {
+            chatInput.disabled = false;
+            sendBtn.disabled = false;
+            
+            // Clear initial message and add welcome message
+            chatMessages.innerHTML = `
+                <div class="message ai">
+                    <p>🎉 Great! I've analyzed your PDF. Now you can ask me questions about the content, teaching strategies, or how to make it more engaging for students.</p>
+                </div>
+            `;
+
+            // Show suggestions
+            showSuggestions([
+                "How can I make this topic more engaging?",
+                "What are the main learning objectives?",
+                "How should I assess student understanding?",
+                "What prerequisites do students need?"
+            ]);
+        }
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message || !pdfContent) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            chatInput.value = '';
+
+            try {
+                const response = await fetch('/pdf-chatbot/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        pdf_content: pdfContent,
+                        context: chatHistory.slice(-3).join(' ')
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    addMessage(result.response, 'ai');
+                    showSuggestions(result.suggestions);
+                    chatHistory.push(message, result.response);
+                } else {
+                    addMessage('Sorry, I encountered an error. Please try again.', 'ai');
+                }
+            } catch (error) {
+                addMessage('Network error. Please check your connection and try again.', 'ai');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `<p>${text}</p>`;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showSuggestions(suggestionList) {
+            suggestions.innerHTML = '<p style="margin-bottom: 10px; font-weight: 600;">💡 Suggested questions:</p>';
+            suggestionList.forEach(suggestion => {
+                const btn = document.createElement('button');
+                btn.className = 'suggestion-btn';
+                btn.textContent = suggestion;
+                btn.onclick = () => {
+                    chatInput.value = suggestion;
+                    sendMessage();
+                };
+                suggestions.appendChild(btn);
+            });
+            suggestions.style.display = 'block';
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${type}`;
+            alertDiv.textContent = message;
+            alerts.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

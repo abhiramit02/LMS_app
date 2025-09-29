@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Progress Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-7xl mx-auto p-6">
+        <h1 class="text-4xl font-bold text-gray-800 mb-6">
+            📊 Progress Dashboard – {{ student.name }}
+        </h1>
+
+        <!-- Storytelling Analytics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            {% for insight in analytics %}
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md rounded-xl p-4">
+                <p class="text-lg">{{ insight }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- Course Completion -->
+            <div class="bg-white shadow-md rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Course Completion</h2>
+                <canvas id="completionChart"></canvas>
+            </div>
+
+            <!-- Attendance -->
+            <div class="bg-white shadow-md rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Attendance</h2>
+                <canvas id="attendanceChart"></canvas>
+            </div>
+
+            <!-- Deadlines -->
+            <div class="bg-white shadow-md rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Deadlines Tracking</h2>
+                <canvas id="deadlinesChart"></canvas>
+            </div>
+
+            <!-- Quiz Attempts -->
+            <div class="bg-white shadow-md rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Quiz Attempts</h2>
+                <canvas id="quizChart"></canvas>
+            </div>
+
+            <!-- Time Spent -->
+            <div class="bg-white shadow-md rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Time Spent on Modules</h2>
+                <canvas id="timeChart"></canvas>
+            </div>
+
+            <!-- Scores -->
+            <div class="bg-white shadow-md rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Scores</h2>
+                <canvas id="scoresChart"></canvas>
+            </div>
+
+            <!-- Login Frequency -->
+            <div class="bg-white shadow-md rounded-xl p-6 col-span-1 md:col-span-2 lg:col-span-3">
+                <h2 class="text-xl font-semibold mb-4">Login Frequency (Weekly)</h2>
+                <canvas id="loginChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Course Completion
+        new Chart(document.getElementById("completionChart"), {
+            type: "doughnut",
+            data: {
+                labels: ["Completed", "Remaining"],
+                datasets: [{
+                    data: [{{ student.course_completion }}, {{ 100 - student.course_completion }}],
+                    backgroundColor: ["#4CAF50", "#E0E0E0"]
+                }]
+            }
+        });
+
+        // Attendance
+        new Chart(document.getElementById("attendanceChart"), {
+            type: "doughnut",
+            data: {
+                labels: ["Attended", "Missed"],
+                datasets: [{
+                    data: [{{ student.attendance }}, {{ 100 - student.attendance }}],
+                    backgroundColor: ["#2196F3", "#FF5722"]
+                }]
+            }
+        });
+
+        // Deadlines
+        new Chart(document.getElementById("deadlinesChart"), {
+            type: "bar",
+            data: {
+                labels: {{ deadline_labels|tojson }},
+                datasets: [{
+                    label: "Assignments",
+                    data: {{ deadline_values|tojson }},
+                    backgroundColor: ["#4CAF50", "#F44336"]
+                }]
+            }
+        });
+
+        // Quiz Attempts
+        new Chart(document.getElementById("quizChart"), {
+            type: "bar",
+            data: {
+                labels: {{ quiz_labels|tojson }},
+                datasets: [{
+                    label: "Attempts",
+                    data: {{ quiz_values|tojson }},
+                    backgroundColor: "#9C27B0"
+                }]
+            }
+        });
+
+        // Time Spent
+        new Chart(document.getElementById("timeChart"), {
+            type: "bar",
+            data: {
+                labels: {{ time_labels|tojson }},
+                datasets: [{
+                    label: "Hours",
+                    data: {{ time_values|tojson }},
+                    backgroundColor: "#FF9800"
+                }]
+            },
+            options: { scales: { y: { beginAtZero: true } } }
+        });
+
+        // Scores
+        new Chart(document.getElementById("scoresChart"), {
+            type: "line",
+            data: {
+                labels: {{ score_labels|tojson }},
+                datasets: [{
+                    label: "Scores (%)",
+                    data: {{ score_values|tojson }},
+                    fill: false,
+                    borderColor: "#673AB7",
+                    tension: 0.3
+                }]
+            },
+            options: { scales: { y: { beginAtZero: true, max: 100 } } }
+        });
+
+        // Login Frequency
+        new Chart(document.getElementById("loginChart"), {
+            type: "line",
+            data: {
+                labels: {{ login_labels|tojson }},
+                datasets: [{
+                    label: "Logins per Day",
+                    data: {{ login_values|tojson }},
+                    borderColor: "#3F51B5",
+                    fill: false,
+                    tension: 0.4
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

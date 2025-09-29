@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        label { display: block; margin-top: 12px; }
+        input, select { padding: 8px; width: 260px; }
+        button { margin-top: 16px; padding: 10px 14px; background: #2563eb; color: white; border: 0; border-radius: 6px; cursor: pointer; }
+        pre { background: #f7f7f7; padding: 12px; border-radius: 6px; overflow: auto; }
+        a { color: #2563eb; }
+    </style>
+</head>
+<body>
+    <h2>Assignment Generator (by Student)</h2>
+    <a href="/">← Back</a>
+    <form id="form">
+        <label>Student ID
+            <input type="text" id="student_id" placeholder="e.g. S1" required value="S1" />
+        </label>
+        <label>Total Questions
+            <input type="number" id="num_questions" value="10" min="1" />
+        </label>
+        <label>Per Topic
+            <input type="number" id="per_topic" value="5" min="1" />
+        </label>
+        <label>Weak Topics (Top K)
+            <input type="number" id="weak_topics" value="3" min="1" />
+        </label>
+        <button type="submit">Generate</button>
+    </form>
+
+    <h3>Result</h3>
+    <pre id="out">Click generate…</pre>
+
+    <script>
+        const out = document.getElementById('out');
+        document.getElementById('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            out.textContent = 'Working…';
+            const payload = {
+                student_id: document.getElementById('student_id').value,
+                num_questions: parseInt(document.getElementById('num_questions').value),
+                per_topic: parseInt(document.getElementById('per_topic').value),
+                weak_topics: parseInt(document.getElementById('weak_topics').value)
+            };
+            const res = await fetch('/assignments/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            out.textContent = JSON.stringify(data, null, 2);
+        });
+    </script>
+</body>
+</html>
+
+

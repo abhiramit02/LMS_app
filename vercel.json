@@ -1,17 +1,18 @@
+
 {
+  "version": 2,
   "builds": [
     {
-      "src": "api/index.py",
+      "src": "api/minimal.py",
       "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb" }
+      "config": { 
+        "maxLambdaSize": "50mb",
+        "memory": 3008,
+        "maxDuration": 10
+      }
     }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/api/index.py" }
-  ],
-  "build": {
-    "env": {
-      "NLTK_DATA": "/tmp/nltk_data"
-    }
-  }
+    { "src": "/(.*)", "dest": "/api/minimal.py" }
+  ]
 }
